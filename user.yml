@@ -1,0 +1,78 @@
+---
+- hosts: all
+  become: true
+  vars_files:
+    - secret.yml
+    - vars/user_list.yml
+  tasks:
+    - name: create a group wheel on all hosts
+      group:
+         name: somegroup
+         state: present
+
+
+    - name: create users on webserver with uid < 2000
+      user:
+         name: "{{item.username}}"
+         uid: "{{item.uid}}"
+         password: "{{user_password | password_hash('sha512')}}"
+         shell: /bin/bash
+         state: present
+      when: inventory_hostname in groups['webservers'] and item.uid < 2000
+      with_items:
+         "{{users}}"
+
+
+
+    - name: upload ssh keys 
+      authorized_key:
+         user: "{{item.username}}"
+         state: present
+         key: "{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}"
+      when: inventory_hostname in groups['webservers'] and item.uid < 2000
+      with_items:
+         "{{users}}"
+
+
+    - name: append wheel group to users in webserver hosts
+      user:
+         name: "{{item.username}}"
+         groups: wheel
+         append: yes
+
+      when: inventory_hostname in groups['webservers'] and item.uid < 2000
+      with_items:
+         "{{users}}"
+    
+    - name: create users on webserver with uid >  2000
+      user:
+         name: "{{item.username}}"
+         uid: "{{item.uid}}"
+         password: "{{user_password | password_hash('sha512')}}"
+         shell: /bin/bash
+         state: present
+      when: inventory_hostname in groups['database'] and item.uid > 2000
+      with_items:
+         "{{users}}"
+
+
+
+    - name: upload ssh keys 
+      authorized_key:
+         user: "{{item.username}}"
+         state: present
+         key: "{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}"
+      when: inventory_hostname in groups['database'] and item.uid > 2000
+      with_items:
+         "{{users}}"
+
+
+    - name: append wheel group to users in database hosts
+      user:
+         name: "{{item.username}}"
+         groups: wheel
+         append: yes
+
+      when: inventory_hostname in groups['database'] and item.uid > 2000
+      with_items:
+         "{{users}}"

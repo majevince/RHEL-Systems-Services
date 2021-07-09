@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: copy welcome HAproxy server
+      copy:
+        content: 'welcome to HAproxy server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: inventory_hostname in groups['proxy']
+
+    - name: copy welcome HAproxy server
+      copy:
+        content: 'welcome to Apache server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: inventory_hostname in groups['webservers']
+   
+    - name: copy welcome HAproxy server
+      copy:
+        content: 'welcome to Database  server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: inventory_hostname in groups['database']

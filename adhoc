@@ -1,0 +1,4 @@
+#!/bin/bash
+sudo -i ansible all -i /home/automation/plays/inventory -m user -a "name=automation uid=1001 state=present" -u root --private-key=/root/.ssh/id_rsa
+sudo -i ansible all -i /home/automation/plays/inventory -m authorized_key -a "user=automation state=present key='{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}'" -u root --private-key=/root/.ssh/id_rsa
+sudo -i ansible all -i /home/automation/plays/inventory -m copy -a "content='automation ALL=(ALL)  NOPASSWD: ALL' dest=/etc/sudoers.d/automation" -u root --private-key=/root/.ssh/id_rsa

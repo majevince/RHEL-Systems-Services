@@ -1,0 +1,18 @@
+---
+- hosts: database
+  become: true
+  tasks:
+    - name: create a file called database.txt with content
+      lineinfile:
+        path: /mnt/mysql_backups/database_list.txt
+        line: dev,test,qa,prod.
+        create: yes
+
+    - name: tar a file called archive.gz in /mnt/mysql_backups
+      archive:
+        path: /mnt/mysql_backups/database_list.txt
+        dest: /mnt/mysql_backups/archive.gz
+        format: gz
+        force_archive: true
+
+

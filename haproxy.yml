@@ -1,0 +1,23 @@
+- hosts: proxy
+  become: true
+  roles:
+    - geerlingguy.haproxy
+  vars_files:
+    - vars/proxy.yml
+
+  tasks:
+     - name: ensure firewall is started and enabled
+       systemd:
+         name: firewalld
+         state: started
+         enabled: yes
+
+     - name: open port 80 and 443 to accept incoming traffics
+       firewalld:
+         port: "{{item}}"
+         permanent: yes
+         immediate: yes
+         state: enabled
+       loop:
+         - 80/tcp
+         - 443/tcp

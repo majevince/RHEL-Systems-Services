@@ -1,0 +1,25 @@
+---
+- hosts: proxy
+  become: true
+  tasks:
+    - name: install cronie packages
+      dnf:
+        name: cronie
+        state: present
+
+
+    - name: start and enable crond service
+      systemd:
+        name: crond
+        state: started 
+        enabled: yes
+
+    - name: schedule task
+      cron:
+        name: create a date job
+        minute: "0"
+        hour: "1"
+        user: root
+        job: "data >> /var/log/time.log"
+        cron_file: /etc/cron_files
+

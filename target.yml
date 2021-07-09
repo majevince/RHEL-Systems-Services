@@ -1,0 +1,9 @@
+---
+- hosts: webservers
+  become: true
+  tasks:
+    - name: set default target to multi user
+      file:
+        src: /lib/systemd/system/multi-user.target
+        dest: /etc/systemd/system/default.target
+

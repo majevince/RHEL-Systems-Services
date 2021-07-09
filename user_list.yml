@@ -1,0 +1,56 @@
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/id.yml
+    - lock.yml
+
+  tasks:
+    - name: create group devops
+      group:
+        name: "{{item}}"
+        state: present
+      loop:
+        - devops
+        - manager
+
+
+    - name: create users for proxy hosts
+      user:
+        name: "{{item.username}}"
+        comment: "{{item.job}}"
+        password: " {{pw_dev | password_hash('sha512')}}"
+        state: present
+      when: inventory_hostname in groups['proxy'] and item.job == 'developer'
+      with_items:
+        "{{users}}"
+    
+
+    - name: append group devops
+      user:
+        name: "{{item.username}}"
+        groups: devops
+        append: yes
+      when: inventory_hostname in groups['proxy'] and item.job == 'developer'
+      with_items:
+        "{{users}}"
+
+    - name: create users for webserver hosts
+      user:
+        name: "{{item.username}}"
+        comment: "{{item.job}}"
+        password: " {{pw_dev | password_hash('sha512')}}"
+        state: present
+      when: inventory_hostname in groups['webservers'] and item.job == 'manager'
+      with_items:
+        "{{users}}"
+    
+
+    - name: append group devops
+      user:
+        name: "{{item.username}}"
+        groups: manager
+        append: yes
+      when: inventory_hostname in groups['webservers'] and item.job == 'manager'
+      with_items:
+        "{{users}}"

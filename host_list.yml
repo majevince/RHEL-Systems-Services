@@ -1,0 +1,11 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: run jinja2 teamplate to query host_list
+      template:
+        src: templates/hostlist.j2
+        dest: /etc/hosts_list_all
+        setype: net_conf_t
+        mode: 0600
+      when: inventory_hostname in groups['database']
