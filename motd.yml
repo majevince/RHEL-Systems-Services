@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: create al welcome messages for dev hosts
+      copy:
+        content: 'Welcome to Dev Server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: inventory_hostname in groups['dev']
+   
+    - name: create al welcome messages for webservers hosts
+      copy:
+        content: 'Welcome to Apache Server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: inventory_hostname in groups['webservers']
+   
+    - name: create al welcome messages for prod hosts
+      copy:
+        content: 'Welcome to MYSQL Server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: inventory_hostname in groups['prod']

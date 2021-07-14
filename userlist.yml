@@ -1,0 +1,55 @@
+---
+- hosts: all
+  become: true
+  vars_files:
+    - vars/user_list.yml
+    - lock.yml
+
+  tasks:
+    - name: create group for devops and manager
+      group:
+        name: "{{item}}"
+        state: present
+      loop:
+        - devops
+        - manager
+
+
+    - name: create user with developer job on dev host
+      user: 
+        name: "{{item.username}}"
+        password: "{{pw_dev | password_hash('sha512')}}"
+        comment: "{{item.job}}"
+        shell: /bin/bash
+      when: inventory_hostname in groups['dev'] and item.job == 'developer'
+      with_items: 
+        "{{users}}"
+
+    - name: append devops group the the new user created for dev host
+      user:
+        groups: devops
+        name: "{{item.username}}"
+        append: yes
+      when: inventory_hostname in groups['dev'] and item.job == 'developer'
+      with_items:
+        "{{users}}"
+
+
+    - name: create user with manager job on dev host
+      user: 
+        name: "{{item.username}}"
+        password: "{{pw_mgr | password_hash('sha512')}}"
+        comment: "{{item.job}}"
+        shell: /bin/bash
+      when: inventory_hostname in groups['prod'] and item.job == 'manager'
+      with_items: 
+        "{{users}}"
+
+    - name: append devops group the the new user created for prod host
+      user:
+        groups: manager
+        name: "{{item.username}}"
+        append: yes
+      when: inventory_hostname in groups['prod'] and item.job == 'manager'
+      with_items:
+        "{{users}}"

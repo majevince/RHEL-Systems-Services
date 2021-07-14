@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: install packages on on all 
+      dnf:
+        name:
+          - httpd
+          - mod_ssl
+          - postfix
+        state: present
+  
+
+    - name: install dev tools on dev sevrver
+      dnf:
+        name: 
+          - '@Development tools'
+        state: present
+      when: inventory_hostname in groups['dev']
+          

@@ -1,0 +1,6 @@
+---
+- src: geerlingguy.php
+  name: php-role
+
+- src: geerlingguy.haproxy
+  name: haproxy-role
