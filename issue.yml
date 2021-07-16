@@ -1,0 +1,20 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: copy Development to dev host
+      copy:
+        content: "Development"
+        dest: /etc/issue
+      when: inventory_hostname in groups['dev']
+    - name: copy Development to dev host
+      copy:
+        content: "Test"
+        dest: /etc/issue
+      when: inventory_hostname in groups['test']
+    - name: copy Production  to prod host
+      copy:
+        content: "Production"
+        dest: /etc/issue
+      when: inventory_hostname in groups['prod']
+

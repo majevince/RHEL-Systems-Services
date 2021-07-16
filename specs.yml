@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: update file on remote host
+      template:
+          src: templates/specs.j2
+          dest: /root/specs.txt

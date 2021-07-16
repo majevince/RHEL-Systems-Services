@@ -1,0 +1,34 @@
+---
+- hosts: test
+  become: true
+  become_user: root
+  tasks:
+    - name: create logical partition 
+      parted:
+        device: /dev/sdb
+        number: 2
+        flags: [ lvm ]
+        state: present
+        part_end: 500MiB
+      when: ansible_devices.sdb is defined
+      ignore_errors: yes
+
+    - name: create volumn group called vg0 with size 1G
+      lvg:
+        vg: vg0
+        pvs: /dev/sdb1
+        state: present
+        force: yes     
+
+    - name: create lvm lv0
+      lvol:
+        vg: vg0
+        lv: lv0
+        size: 300m
+        state: present
+    - name: create an xfs filesystem
+      filesystem:
+        fstype: xfs
+        dev: /dev/vg0/lv0
+
+

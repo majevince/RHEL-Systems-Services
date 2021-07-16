@@ -1,0 +1,43 @@
+---
+# tasks file for sample-apache
+- name: ensure apache is installed
+  dnf:
+    name:
+      - httpd
+      - mod_ssl
+      - php
+    state: present
+
+- name: ensure apache is enabled and started
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: ensure firewalld packages is isnatalled
+  dnf:
+    name: firewalld
+    state: present
+
+- name: ensure filewalld is enabled and started
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: open port to accept incomming traffics
+  firewalld:
+    port: "{{item}}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop:
+    - 80/tcp
+    - 443/tcp
+
+- name: configure html file
+  template:
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+  notify: restart apache
+
