@@ -1,0 +1,26 @@
+---
+- hosts: all 
+  become: true
+  tasks:
+    - name: ensure cronie is installed
+      dnf:
+        name: cronie
+        state: present
+
+    - name: ensure crond is enabled and started
+      systemd:
+        name: crond
+        state: started
+        enabled: yes
+
+    - name: schedule tasks
+      cron:
+        name: schedule tasks
+        minute: "1"
+        hour: "0"
+        user: root
+        job: "data >> /root/datefile"
+        cron_file: ansible_schedule
+
+
+

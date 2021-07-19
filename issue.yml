@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: change file in /etc/issue to Development
+      copy:
+        content: 'Development'
+        dest: /etc/issue
+      when: ansible_hostname in groups['dev']
+    
+    - name: change file in /etc/issue to Test
+      copy:
+        content: 'Test'
+        dest: /etc/issue
+      when: ansible_hostname in groups['test']
+    
+    - name: change file in /etc/issue to proxy
+      copy:
+        content: 'Proxy'
+        dest: /etc/issue
+      when: ansible_hostname in groups['proxy']
+    
+    - name: change file in /etc/issue to Production
+      copy:
+        content: 'Production'
+        dest: /etc/issue
+      when: ansible_hostname in groups['prod']

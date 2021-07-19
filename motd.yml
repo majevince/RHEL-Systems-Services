@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: replace the exixitng content Welcome to Dev server {{ansible_fqdn}}
+      copy:
+        content: 'Welcome to Dev server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: ansible_hostname in groups['dev']
+    
+    - name: replace the exixitng content Welcome to Dev server {{ansible_fqdn}}
+      copy:
+        content: 'Welcome to Test server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: ansible_hostname in groups['test']
+    
+    - name: replace the exixitng content Welcome to proxy server {{ansible_fqdn}}
+      copy:
+        content: 'Welcome to proxy server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: ansible_hostname in groups['proxy']
+    
+    - name: replace the exixitng content Welcome to Apache {{ansible_fqdn}}
+      copy:
+        content: 'Welcome to Apache server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: ansible_hostname in groups['webservers']

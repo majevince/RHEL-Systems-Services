@@ -1,0 +1,9 @@
+Host= {{ansible_hostname}}
+
+MEMORY= {{ansible_memtotal_mb}}
+
+BIOS= {{ansible_bios_version}}
+
+VDA_DISK_SIZE = {% if ansible_device.vda is defined %}{{ansible_device.vda}}{% else %}NONE{% endif %}
+
+VDB_DISK_SIZE = {% if ansible_device.vdb is defined %}{{ansible_device.vdb}}{% else %}NONE{% endif %}

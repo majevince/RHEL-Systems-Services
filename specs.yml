@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: collect facts
+      template:
+        src: templates/specs.j2
+        dest: /home/sandy/ansible.txt
+
