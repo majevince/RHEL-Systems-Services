@@ -1,0 +1,26 @@
+---
+- hosts: test
+  become: true
+  tasks:
+    - name: create  ansible facts.d
+      file:
+        path: /etc/ansible/facts.d
+        state: directory
+        recurse: yes
+
+    - name: create absible custom fact
+      file:
+        path: /etc/ansible/facts.d/custom.fact
+        state: touch
+
+    - name: copy custome content
+      copy:
+        content: |
+          [sample_exam]
+          server_role=mysql 
+        dest: /etc/ansible/facts.d/custom.fact
+
+
+    - name: show output
+      debug:
+        msg: "{{ansible_local.custom.sample_exam}}"

@@ -1,0 +1,14 @@
+---
+- hosts: test
+  become: true
+  tasks:
+    - name: configure yum repository
+      yum_repository:
+        name: mysql80-community
+        description: MySQL 8.0 YUM Repo
+        gpgcheck: yes
+        baseurl: http://repo.mysql.com/yum/mysql-8.0-community/el/8/x86_64/
+        gpgkey: http://repo.mysql.com/RPM-GPG-KEY-mysql
+        enabled: yes
+
+

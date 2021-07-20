@@ -1,0 +1,7 @@
+---
+- hosts: test
+  become: true
+  vars_files:
+    - lock.yml
+  roles:
+    - sample-mysql

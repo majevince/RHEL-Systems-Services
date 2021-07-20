@@ -1,0 +1,27 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: create file on dev server 
+      copy:
+        content: 'Welcome to Devlopment Server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: ansible_hostname in groups['dev']
+
+    - name: create file on test server 
+      copy:
+        content: 'Welcome to Testing Server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: ansible_hostname in groups['test']
+    
+    - name: create file on dev server 
+      copy:
+        content: 'Welcome to proxy Server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: ansible_hostname in groups['proxy']
+    
+    - name: create file on prod server 
+      copy:
+        content: 'Welcome to Production Server {{ansible_fqdn}}'
+        dest: /etc/motd
+      when: ansible_hostname in groups['prod']

@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: create a file in /etc/issue
+      copy:
+        content: 'Development'
+        dest: /etc/issue
+      when: ansible_hostname in groups['dev']
+    
+    - name: create a file in /etc/issue
+      copy:
+        content: 'Test'
+        dest: /etc/issue
+      when: ansible_hostname in groups['test']
+    
+    - name: create a file in /etc/issue
+      copy:
+        content: 'Production'
+        dest: /etc/issue
+      when: ansible_hostname in groups['prod']

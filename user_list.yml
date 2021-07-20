@@ -1,0 +1,54 @@
+---
+- hosts: all
+  become: true
+  vars_files:
+    - lock.yml
+    - vars/user_list.yml
+  tasks:
+    - name: create group devops  on dev hosts
+      group:
+        name: devops
+        state: present
+      when: ansible_hostname in groups['dev']
+
+    - name: create user with job developer on dev hosts
+      user:
+        name: "{{item.username}}"
+        comment: "{{item.job}}"
+        password: "{{pw_dev | password_hash('sha512')}}"
+      when: ansible_hostname in groups['dev'] and item.job == 'developer'
+      with_items:
+        "{{users}}"
+
+    - name: append group devops to user created on developer hosts
+      user:
+        name: "{{item.username}}"
+        groups: devops
+        append: yes 
+      when: ansible_hostname in groups['dev'] and item.job == 'developer'
+      with_items:
+        "{{users}}"
+    
+    - name: create group  manager on proxy hosts
+      group:
+        name: manager
+        state: present
+      when: ansible_hostname in groups['proxy']
+    
+    - name: create user with job manager on proxy hosts
+      user:
+        name: "{{item.username}}"
+        comment: "{{item.job}}"
+        password: "{{pw_mgr | password_hash('sha512')}}"
+      when: ansible_hostname in groups['proxy'] and item.job == 'manager'
+      with_items:
+        "{{users}}"
+
+    - name: append group devops to user created on developer hosts
+      user:
+        name: "{{item.username}}"
+        groups: manager
+        append: yes 
+      when: ansible_hostname in groups['proxy'] and item.job == 'manager'
+      with_items:
+        "{{users}}"

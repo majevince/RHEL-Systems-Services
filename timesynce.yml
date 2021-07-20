@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - rhel-system-roles.timesync
+  vars:
+    timesync_ntp_provider:
+      - hostname: 0.uk.pool.ntp.org
+        iburst: yes

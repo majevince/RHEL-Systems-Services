@@ -1,0 +1,27 @@
+---
+- hosts: proxy
+  become: true
+  roles:
+    - haproxy-role
+  vars_files: 
+    - vars/haproxy.yml
+  tasks:
+    - name: ensure firewalld is installed
+      dnf:
+        name: firewalld
+        state: present
+
+    - name: ensure firewalld is enable and started
+      systemd:
+        name: firewalld
+        state: started
+        enabled: yes
+
+    - name: open port 80 to accept incomming traffics
+      firewalld:
+        port: 80/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+

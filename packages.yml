@@ -1,0 +1,17 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: install packages on all hosts
+      dnf:
+        name:
+          - httpd
+          - mod_ssl
+          - mariadb
+        state: present
+     
+    - name: install Development tools on only on dev host
+      dnf:
+        name: '@Development tools'
+        state: present
+      when: ansible_hostname in groups['dev']

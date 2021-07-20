@@ -1,0 +1,31 @@
+---
+- hosts: test
+  become: true
+  tasks:
+    - name: create partion on /dev/sdb 1000M
+      parted:
+        device: /dev/sdb
+        number: 1
+        flags: [ lvm ]
+        state: present
+        part_end: 1GiB
+
+    - name: create volume group
+      lvg:
+        vg: vg0
+        pvs: /dev/sdb1
+        state: present
+      when: ansible_devices.sdb.partitions.sdb1 is defined 
+
+    - name: create lvm
+      lvol:
+        vg: vg0
+        lv: lvO
+        size: 1500m
+        state: present
+      when: ansi        
+
+
+
+
+

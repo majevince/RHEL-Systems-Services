@@ -1,0 +1,16 @@
+---
+- hosts: webservers
+  become: true
+  roles:
+    - rhel-system-roles.selinux
+  vars:
+    selinux_state: enforcing
+    selinux_policy: targeted
+
+  tasks:
+    - name: set selinux context httpd_can_network_connect on webserver hosts
+      seboolean:
+        name: httpd_can_network_connect
+        state: yes
+        persistent: yes
+

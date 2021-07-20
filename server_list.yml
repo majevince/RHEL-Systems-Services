@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: extract server list
+      template:
+        src: templates/server_list.j2
+        dest: /etc/server_list.txt
+        owner: sandy
+        setype: net_conf_t
+        mode: 0600
+      when: ansible_hostname in groups['test']
+
