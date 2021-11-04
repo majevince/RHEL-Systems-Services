@@ -1,0 +1,25 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: copy Development to dev host /etc/issues
+      copy:
+        dest: /etc/issue
+        content: 'Development'
+      when: ansible_hostname in groups['dev']
+
+    - name: copy Test to test host /etc/issues
+      copy:
+        dest: /etc/issue
+        content: 'Test'
+      when: ansible_hostname in groups['test']
+    - name: copy Proxy to proxy host /etc/issues
+      copy:
+        dest: /etc/issue
+        content: 'Proxy'
+      when: ansible_hostname in groups['proxy']
+    - name: copy Production to prod host /etc/issues
+      copy:
+        dest: /etc/issue
+        content: 'Production'
+      when: ansible_hostname in groups['prod']

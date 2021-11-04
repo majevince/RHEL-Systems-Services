@@ -1,0 +1,48 @@
+---
+- hosts: dev
+  become: true
+  tasks: 
+    - name: create user webdev
+      user:
+        name: webdev
+        state: present
+
+    - name: create a directory called webdev
+      file:
+        path: /webdev
+        setype: httpd_sys_content_t
+        owner: webdev
+        mode: '2755'
+        state: directory
+
+    - name: create a symbolic link with index.html
+      file:
+        src: /webdev
+        dest: /var/www/html/webdev
+        state: link
+
+    - name: open port 80 and 443 for incomming traffics
+      firewalld:
+        port: "{{item}}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - 80/tcp
+        - 443/tcp
+    - name: retsart apache
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes 
+
+    - name: creat a symboli link
+      copy:
+        dest: /webdev/index.html
+        content: 'Development is the way out'
+        setype: httpd_sys_content_t
+
+    - name: restart apache
+      systemd:
+        name: httpd
+        state: restarted

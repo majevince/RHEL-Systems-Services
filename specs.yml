@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: copy specs data
+      template:
+        src: templates/spec.j2
+        dest: /root/specs.txt
+

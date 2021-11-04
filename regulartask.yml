@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: ensure cronie is installed
+      dnf:
+        name: cronie
+        state: latest
+
+    - name: ensure crond is started and enabled
+      systemd:
+        name: crond
+        state: started
+        enabled: yes
+
+    - name: schedule tasks
+      cron:
+        name: datejob
+        minute: "0"
+        hour: "12"
+        user: root
+        job: "date >> /root/datefile"
+
+

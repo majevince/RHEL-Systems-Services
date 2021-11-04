@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: copy Welcome to Development FQDN dev host
+      copy:
+        dest: /etc/motd
+        content: 'Welcome To Development {{ansible_fqdn}}'
+      when: ansible_hostname in groups['dev']
+
+
+    - name: copy Welcome to Development FQDN dev host
+      copy:
+        dest: /etc/motd
+        content: 'Welcome To Test {{ansible_fqdn}}'
+      when: ansible_hostname in groups['test']
+    - name: copy Welcome to Production FQDN dev host
+      copy:
+        dest: /etc/motd
+        content: 'Welcome To Production {{ansible_fqdn}}'
+      when: ansible_hostname in groups['prod']

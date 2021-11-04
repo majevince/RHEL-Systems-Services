@@ -1,0 +1,18 @@
+---
+- hosts: dev, prod, webservers
+  become: true
+  tasks:
+    - name: install packages 
+      dnf:
+        name:
+          - mod_ssl
+          - httpd
+          - mariadb
+        state: present
+
+    - name: install development tools on dev host
+      dnf:
+        name: '@Development tools'
+        state: present
+      when: ansible_hostname in groups['dev']
+
