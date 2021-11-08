@@ -1,0 +1,31 @@
+---
+- hosts: all
+  become: true
+  vars:
+    haproxy_backend_servers: 
+      - name: node4
+        address: 192.168.121.37:80
+      - name: node5
+        address: 192.168.121.20:80
+
+  tasks:
+    - name: use haproxy-role
+      include_role: 
+        name: haproxy-role
+      when: ansible_hostname in groups['proxy']
+    - name: ensure firewalld port is open for http traffics
+      firewalld:
+        port: "{{item}}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - 80/tcp
+      when: ansible_hostname in groups['proxy']
+
+
+
+    - name: use php-role
+      include_role: 
+        name: php-role
+      when: ansible_hostname in groups['prod']

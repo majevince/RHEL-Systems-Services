@@ -1,0 +1,11 @@
+---
+users:
+  - username: bill
+    job: developer
+  - username: shady
+    job: manager
+  - username: vince
+    job: test
+  - username: juliet
+    job: developer
+

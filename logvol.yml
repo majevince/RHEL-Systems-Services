@@ -1,0 +1,39 @@
+---
+- hosts: test
+  become: true
+  tasks:
+    - name: create partition 
+      parted:
+        device: /dev/vdb
+        number: 1
+        flags: [ lvm ]
+        state: present
+
+    - name: create volume group
+      lvg:
+        vg: vg0
+        pvs: /dev/vdb1
+        state: present
+      when: ansible_devices.vdb is defined 
+
+    - name: create lvm if greate than 1500m
+      lvol:
+       vg: vg0
+       lv: lv0
+       size: 1000m
+      when: ansible_lvm.vgs.vg0 is defined and ((ansible_lvm.vgs.vg0.size_g | float ) > 1.5 )
+
+    - name: debug
+      debug:
+       msg: 'volume group does not exist' 
+
+    - name: creat lvm if less than 1550m
+      lvol:
+       vg: vg0
+       lv: lv0
+       size: 1000m
+      when: ansible_lvm.vgs.vg0 is defined and ((ansible_lvm.vgs.vg0.size_g | float ) < 1.5 )
+    - name: create filesystem
+      filesystem:
+       fstype: xfs
+       dev: /dev/vg0/lv0

@@ -1,0 +1,37 @@
+---
+# tasks file for sample-apache
+- name: install pacakges
+  dnf:
+    name:
+      - httpd
+      - firewalld
+    state: present 
+
+- name: ensure firewalld is installed and enable
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: ensure htpd is installed and enabled
+  systemd:
+    name: httpd
+    state: started
+    enabled: yes
+
+- name: open 80 and 443
+  firewalld:
+    port: "{{item}}"
+    permanent: yes
+    immediate: yes
+    state: enabled
+  loop:
+    - 80/tcp
+    - 443/tcp
+
+- name: configure html file
+  template:
+    src: templates/index.html.j2
+    dest: /var/www/html/index.html
+  notify: restart apache
+

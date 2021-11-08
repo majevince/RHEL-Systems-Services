@@ -1,0 +1,43 @@
+---
+- hosts: dev
+  become: true
+  tasks:
+    - name: create user webdev
+      user:
+        name: webdev
+        state: present
+    - name: create a directory  webdev owner
+      file:
+        path: /webdev
+        state: directory
+        owner: webdev
+        mode: 2755
+        
+    - name: creat a sysmbolic link between webdev and /var/www/html/webdev
+      file:
+        src: /webdev/
+        dest: /var/www/html/webdev
+        state: link
+    
+    - name:  copy file content 
+      copy:
+       dest: /webdev/index.html
+       content: 'Development'
+       setype: httpd_sys_content_t
+
+    - name: open port 80 and 443 for incomming traffics
+      firewalld:
+        port: "{{item}}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - 80/tcp
+        - 443/tcp
+    
+    - name: retsart apache
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes
+

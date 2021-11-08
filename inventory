@@ -1,0 +1,16 @@
+[dev]
+node1
+
+[test]
+node2
+
+[proxy]
+node3
+
+[prod]
+node4
+node5
+
+[webservers:children]
+prod
+

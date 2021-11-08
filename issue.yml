@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: write Development in /etc/issue on dev host
+      copy:
+        dest: /etc/issue
+        content: 'Development'
+      when: ansible_hostname in groups['dev']
+    - name: write Test in /etc/issue on test host
+      copy:
+        dest: /etc/issue
+        content: 'Test'
+      when: ansible_hostname in groups['test']
+    - name: write Production in /etc/issue on prod host
+      copy:
+        dest: /etc/issue
+        content: 'Production'
+      when: ansible_hostname in groups['prod']

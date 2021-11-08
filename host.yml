@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: true
+  tasks: 
+    - name: collect host spec
+      template:
+        src: templates/report.j2
+        dest: /root/myhost
+      when: ansible_hostname in groups['dev']
