@@ -1,0 +1,25 @@
+---
+- hosts: database
+  become: true
+  tasks:
+    - name: create directory /etc/ansible/facts.d
+      file:
+        path: /etc/ansible/facts.d
+        state: directory
+
+    - name: create file
+      file:
+        path: /etc/ansible/facts.d/custom.fact
+        state: touch
+
+    - name: copy content
+      copy:
+        dest: /etc/ansible/facts.d/custom.fact
+        content: |
+          [sample_exam]
+          server_role=mysql
+
+    - name: debug
+      debug:
+        msg: "{{ansible_local.custom.sample_exam}}"
+       

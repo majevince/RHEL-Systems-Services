@@ -1,0 +1,38 @@
+---
+- hosts: dev
+  become: true
+  tasks:
+    - name: create primary partition
+      parted:
+        device: /dev/vdb
+        number: 1
+        flags: [ lvm ]
+        state: present
+
+    - name: create logical volume vg0
+      lvg:
+        vg: vg0
+        pvs: /dev/vdb1
+        state: present
+      when: ansible_devices.vdb is defined
+
+    - name: create lvm lv0 if device greater than 1500
+      lvol:
+        vg: vg0
+        lv: lv0
+        size: 1500m
+      when: ansible_lvm.vgs.vg0 is defined and ((ansible_lvm.vgs.vg0.size_g | float ) > 1.5)
+
+
+    - name: create lvm lv0 if device greater than 1500
+      lvol:
+        vg: vg0
+        lv: lv0
+        size: 800m
+      when: ansible_lvm.vgs.vg0 is defined and ((ansible_lvm.vgs.vg0.size_g | float ) < 1.5)
+
+    - name: format exf filesystem
+      filesystem:
+        fstype: xfs
+        dev: /dev/vg0/lv0
+

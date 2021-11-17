@@ -1,0 +1,47 @@
+---
+- hosts: database , webservers
+  become: true
+  vars_files:
+    - secret.yml
+    - vars/user_list.yml
+  tasks:
+    - name: create group wheel
+      group:
+        name: wheel
+        state: present
+
+    - name: create users with id 1 on webservers host
+      user:
+        name: "{{item.username}}"
+        password: "{{user_password | password_hash('sha512')}}"
+        uid: "{{item.uid}}"
+        groups: wheel
+        append: yes
+        shell: /bin/bash 
+      when: ansible_hostname in groups['webservers'] and item.uid < 2000
+      with_items:
+        "{{users}}"
+
+
+    - name: create users with id 2 on webservers host
+      user:
+        name: "{{item.username}}"
+        password: "{{user_password | password_hash('sha512')}}"
+        uid: "{{item.uid}}"
+        groups: wheel
+        append: yes
+        shell: /bin/bash
+      when: ansible_hostname in groups['database'] and item.uid > 2000
+      with_items:
+        "{{users}}"
+
+
+
+    - name: upload ssh keys on all users
+      authorized_key:
+        user: "{{item.username}}"
+        state: present
+        key: "{{ lookup('file', '/home/automation/.ssh/id_rsa.pub') }}"
+      with_items: 
+        "{{users}}"
+

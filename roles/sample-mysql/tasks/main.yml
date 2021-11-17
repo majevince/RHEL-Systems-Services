@@ -1,0 +1,86 @@
+---
+# tasks file for sample-mysql
+- name: create primary partition
+  parted:
+    device: /dev/vdb
+    number: 1
+    flags: [ lvm ]
+    part_end: 800MiB
+    state: present
+
+    
+- name: create volume group vg_database
+  lvg:
+    vg: vg_database
+    pvs: /dev/vdb1
+    state: present
+
+- name: create LVM lv_mysql
+  lvol:
+    vg: vg_database
+    lv: lv_mysql
+    size: 512m
+    state: present 
+
+- name: format xfs filesystem
+  filesystem:
+    fstype: xfs
+    dev: /dev/vg_database/lv_mysql
+
+- name: create directory /mnt/mysql_backups
+  file:
+    path: /mnt/mysql_backups
+    state: directory
+
+    
+- name: mount /mnt/mysql_backups
+  mount:
+    path: /mnt/mysql_backups
+    src: /dev/vg_database/lv_mysql
+    fstype: xfs
+    state: present
+
+
+
+- name: installed mysql-community-server packages
+  dnf:
+    name:
+      - mysql-server
+      - python3-PyMySQL
+      - firewalld
+    state: present
+
+- name: ensure firewalld is enabled and started
+  systemd:
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: ensure mysql is enabled and started
+  systemd:
+    name: mysqld
+    state: started
+    enabled: yes
+
+- name: open port 3306
+  firewalld:
+    port: 3306/tcp
+    permanent: yes
+    immediate: yes
+    state: enabled
+
+- name: set MySQL root user password 
+  mysql_user:
+    name: root
+    password: "{{database_password}}"
+    login_user: root
+    login_password: "{{database_password}}"
+    priv: '*.*:ALL,GRANT'
+    state: present
+
+
+- name: MySQL server configuration file is generated from the my.cnf.j2
+  template:
+    src: templates/my.cnf.j2
+    dest: /etc/my.cnf
+  notify: restart mysql

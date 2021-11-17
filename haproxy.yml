@@ -1,0 +1,19 @@
+---
+- hosts: proxy
+  become: true
+  vars:
+    haproxy_backend_servers:
+     - name: node3
+       address: 192.168.121.38:80
+     - name: node4
+       address: 192.168.121.240:80
+  roles:
+    - geerlingguy.haproxy
+  
+  tasks:
+    - name: open port 80
+      firewalld:
+        port: 80/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled 

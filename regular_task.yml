@@ -1,0 +1,24 @@
+---
+- hosts: proxy
+  become: true
+  tasks:
+    - name: ensure cronie is installed
+      dnf:
+        name: cronie
+        state: present
+
+    - name: ensure crond is enabled and started 
+      systemd:
+        name: crond
+        state: started
+        enabled: yes
+
+    - name: schedule tasks
+      cron:
+        name: datejob
+        minute: "0"
+        hour: "1"
+        user: root
+        job: "date >> /var/log/time.log"
+
+

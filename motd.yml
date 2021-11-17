@@ -1,0 +1,24 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: configure /etc/motd file on proxy host
+      copy:
+        dest: /etc/motd
+        content: 'Welcome to HAproxy Server'
+      when: ansible_hostname in groups['proxy']
+    - name: configure /etc/motd file on webservers host
+      copy:
+        dest: /etc/motd
+        content: 'Welcome to Apache Server'
+      when: ansible_hostname in groups['webservers']
+    - name: configure /etc/motd file on database host
+      copy:
+        dest: /etc/motd
+        content: 'Welcome to MySQL Server'
+      when: ansible_hostname in groups['database']
+    - name: configure /etc/motd file on dev host
+      copy:
+        dest: /etc/motd
+        content: 'Welcome to Dev Server'
+      when: ansible_hostname in groups['dev']

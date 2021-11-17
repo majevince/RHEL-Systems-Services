@@ -1,0 +1,9 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: collect device specs
+      template:
+        src: templates/specs.j2
+        dest: /root/specs.txt
+

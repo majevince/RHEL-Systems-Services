@@ -1,0 +1,29 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: change /etc/issue file
+      copy:
+        content: 'Development'
+        dest: /etc/issue
+      when: ansible_hostname in groups['dev']
+
+
+
+    - name: change /etc/issue file on proxy host
+      copy:
+        content: 'proxy'
+        dest: /etc/issue
+      when: ansible_hostname in groups['proxy']
+
+    - name: change /etc/issue file on database host
+      copy:
+        content: 'MYSQL'
+        dest: /etc/issue
+      when: ansible_hostname in groups['database']
+
+    - name: change /etc/issue file on webservers host
+      copy:
+        content: 'Apache'
+        dest: /etc/issue
+      when: ansible_hostname in groups['webservers']

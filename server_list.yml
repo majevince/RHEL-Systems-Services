@@ -1,0 +1,13 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name:  create template file
+      template:
+        src: templates/server_list.j2
+        dest: /etc/server_list.txt
+        owner: automation
+        mode: '0600'
+        setype: net_conf_t
+      when: ansible_hostname in groups['database']
+

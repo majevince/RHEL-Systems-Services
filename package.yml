@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: true
+  tasks:
+    - name: install 
+      dnf:
+        name: 
+          - tcpdump
+          - mailx
+        state: present
+      when: ansible_hostname in groups['proxy'] 
+
+    - name: install 
+      dnf:
+        name: 
+          - lsof
+          - mailx
+        state: present
+      when: ansible_hostname in groups['database'] 

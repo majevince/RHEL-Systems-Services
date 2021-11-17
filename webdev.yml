@@ -1,0 +1,62 @@
+---
+- hosts: dev
+  become: true
+  tasks:
+
+    - name: install httpd
+      dnf:
+        name: httpd
+        state: latest
+
+    - name: enable httpd
+      systemd:
+        name: httpd
+        state: started
+        enabled: yes
+
+    - name: open firewall port
+      firewalld:
+        port: 80/tcp
+        permanent: yes
+        immediate: yes
+        state: enabled
+
+
+    - name: create user webdev
+      user:
+        name: webdev
+        state: present
+
+    - name: create directory webdev
+      file:
+        path: webdev
+        state: directory
+        setype: httpd_sys_content_t
+        owner: webdev
+        mode: '0755'
+
+    - name: create symbolink
+      file:
+        src: /webdev
+        force: yes
+        dest: /var/www/html/webdev
+        state: link
+
+    - name: create a file
+      file:
+        path: webdev/index.html
+        setype: httpd_sys_content_t
+        state: touch
+
+
+    - name: create web content
+      copy:
+        content: 'Development'
+        dest: webdev/index.html
+    - name: restart apache
+      systemd:
+        name: httpd
+        state: restarted
+
+       
+

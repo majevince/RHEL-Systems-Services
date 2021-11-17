@@ -1,0 +1,7 @@
+---
+- hosts: database
+  become: true
+  vars_files:
+    - secret.yml
+  roles:
+    - sample-mysql
